@@ -6,17 +6,38 @@ using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour {
 
-    public GameObject m_ControlSelectionFrame;
-    public GameObject m_DriveSelectionFrame;
-    public GameObject m_MusicSelectionFrame;
-    public GameObject m_SFXSelectionFrame;
-    public GameObject m_ButtonsCollectionFrame;
-
     public Image m_SelectedButtonImage;
 
     public Text m_SelectedButtonText;
 
     public bool m_ToggleSelection;
+
+    public bool m_Flipped;
+
+    public Sprite m_SteerImage;
+
+    public Sprite m_TouchImage;
+
+    public Sprite m_TiltImage;
+
+    public Sprite m_SteerFlipImage;
+
+    public Sprite m_TouchFlipImage;
+
+    public Image m_Steer;
+
+    public Image m_Touch;
+
+    public Image m_Tilt;
+
+    public Slider m_MusicSlider;
+
+    public Slider m_SFXSlider;
+
+    public Slider m_SteerSensitivitySlider;
+
+    public float tempVal;
+
     public enum ControlType
     {
         Steering,
@@ -56,9 +77,43 @@ public class UIManager : MonoBehaviour {
     void Start()
     {
         
+        m_MusicSlider.value = PlayerPrefs.GetFloat(m_MusicSlider.gameObject.name, 0);
+        m_SFXSlider.value = PlayerPrefs.GetFloat(m_SFXSlider.gameObject.name, 0);
+        m_SteerSensitivitySlider.value = PlayerPrefs.GetFloat(m_SteerSensitivitySlider.gameObject.name, 0);
+
+
+        m_MusicSlider.onValueChanged.AddListener((tempVal)=>{ValueChangeCheck(m_MusicSlider);});
+        m_SFXSlider.onValueChanged.AddListener((tempVal)=> {ValueChangeCheck(m_SFXSlider);});
+        m_SteerSensitivitySlider.onValueChanged.AddListener((tempVal)=> {ValueChangeCheck(m_SteerSensitivitySlider);});
+
+    }
+
+    void FlipControls()
+    {
+        m_Flipped = !m_Flipped;
+
+        if (m_Flipped)
+        {
+            m_Steer.sprite = m_SteerFlipImage;
+            m_Touch.sprite = m_TouchFlipImage;
+        }
+        else
+        {
+            m_Steer.sprite = m_SteerImage;
+            m_Touch.sprite = m_TouchImage;
+        }
     }
 
 
+    void ValueChangeCheck(Slider p_Slider)
+    {
+            tempVal = p_Slider.value;
+            PlayerPrefs.SetFloat(p_Slider.gameObject.name, tempVal);
+            Debug.Log("Name of the slider " + p_Slider.gameObject.name + " and its value is " + PlayerPrefs.GetFloat(p_Slider.gameObject.name));
+//            Debug.Log("Something is printed");
+      
+//        PlayerPrefs.SetFloat(slider.gameObject.name, slider.value);
+    }
     void ToggleSelect()
     {
         m_ToggleSelection = !m_ToggleSelection;
@@ -106,6 +161,11 @@ public class UIManager : MonoBehaviour {
              
         }
     }
+
+    void Update()
+    {
+        
+    }
     public void OnClickButton(string p_ButtonName)
     {
 //        Debug.Log(EventSystem.current.currentSelectedGameObject.transform.GetChild(2).transform.GetChild(0).transform.name);
@@ -128,6 +188,7 @@ public class UIManager : MonoBehaviour {
 
                     break;
                 case "FlipControlButton":
+                    FlipControls();
                     Debug.Log("<color=magenta>Flip Control</color> is Selected");
 
                     break;
